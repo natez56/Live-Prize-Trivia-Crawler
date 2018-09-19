@@ -1,2 +1,2 @@
-score_file.txt
-main.pyc
+*.txt
+*.pyc

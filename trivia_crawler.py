@@ -43,6 +43,7 @@ def init_webdriver(url, table_td_class):
 
 
 def get_team_names(driver, table_td_class):
+    """Get top 25 tournament team names."""
     html_page = driver.page_source
     html_soup = soup(html_page, 'lxml')
 
@@ -52,6 +53,7 @@ def get_team_names(driver, table_td_class):
     keys = []
     for i, cell in enumerate(main_table):
         value = cell.string
+
         for char in value:
             if not char.isalpha() and not char.isdigit() and char != " ":
                 value = value.replace(char, "")
@@ -63,18 +65,23 @@ def get_team_names(driver, table_td_class):
 
 
 def get_team_scores(driver, keys, score_dict):
+    """Get top 25 team scores."""
     table_td_class = 'lpt-trivia-leagues-row'
 
+    # Ensure main table is populated.
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
         (By.CLASS_NAME, table_td_class))
     )
 
+    # Get scores of all teams.
     for i in range(len(score_dict)):
         driver.implicitly_wait(60)
 
+        # Click on main table cell to open modal view of scores.
         team = driver.find_elements_by_class_name(table_td_class)
         team[i].click()
 
+        # Wait for modal to populate.
         rows = []
         while len(rows) < 3:
             html_page = driver.page_source
@@ -83,15 +90,19 @@ def get_team_scores(driver, keys, score_dict):
             table = html_soup.find('table', class_='table table-striped')
             rows = table.findChildren(['tr'])
 
+        # Add scores to dictionary.
         for row in rows:
             cells = row.findChildren('td')
+
             for cell in cells:
                 value = cell.string
+
                 if value is not None and value.isdigit():
                     score_dict[keys[i]].append(int(value))
 
         driver.implicitly_wait(60)
 
+        # Click close button of modal to return to main table.
         button_xpath = ("//div[@class='modal-footer']//button[@class='btn "
                         "btn-default btn-lg']")
 
@@ -102,13 +113,18 @@ def get_team_scores(driver, keys, score_dict):
 
 
 def calc_real_scores(score_dict):
+    """Take best scores from teams limited to the number of 3 Dog Night
+    Posted Scores.
+    """
     my_team_name = "3 Dog Night"
     num_scores = len(score_dict[my_team_name])
 
     real_scores = {}
     for key in score_dict:
         scores = score_dict[key]
+
         scores.sort()
+
         scores = scores[::-1]
 
         total_score = 0
@@ -117,6 +133,7 @@ def calc_real_scores(score_dict):
 
         real_scores[key] = total_score
 
+    # Create sorte list of tuples (team_name, score)
     sorted_real_scores = sorted(real_scores.items(), key=lambda kv: kv[1])
     sorted_real_scores = sorted_real_scores[::-1]
 
@@ -124,6 +141,7 @@ def calc_real_scores(score_dict):
 
 
 def write_scores_to_file(scores):
+    """Writes totals and team name to txt file."""
     with open('score_file.txt', 'w+') as f:
         for team in scores:
             f.write("Name: " + team[0] + "\n")
