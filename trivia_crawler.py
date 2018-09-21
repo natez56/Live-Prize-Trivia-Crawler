@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup as soup, Comment
 import time
 
@@ -29,8 +30,10 @@ def main():
 def init_webdriver(url, table_td_class):
     """Initiate selenium headless browser."""
     my_driver_path = "/mnt/c/Python27/chromedriver.exe"
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
 
-    driver = webdriver.Chrome(my_driver_path)
+    driver = webdriver.Chrome(my_driver_path, chrome_options=chrome_options)
 
     driver.get(url)
 
