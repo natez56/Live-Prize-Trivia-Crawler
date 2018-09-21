@@ -128,8 +128,10 @@ def calc_real_scores(score_dict):
         scores = scores[::-1]
 
         total_score = 0
-        for i in range(num_scores):
+        i = 0
+        while i < num_scores and i < len(scores):
             total_score += scores[i]
+            i += 1
 
         real_scores[key] = total_score
 
