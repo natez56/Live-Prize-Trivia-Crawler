@@ -4,8 +4,6 @@ threadsafe: true
 libraries:
 - name: jinja2
   version: "2.6"
-- name: pytz
-  version: "2017.3"
 
 handlers:
 - url: /bootstrap

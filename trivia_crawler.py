@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup as soup, Comment
 import time
+import datetime
+import pytz
 
 
 def main():
@@ -151,6 +153,10 @@ def write_scores_to_file(scores):
         for team in scores:
             f.write("Name: " + team[0] + "\n")
             f.write("Score: " + str(team[1]) + "\n")
+
+        utc_now = pytz.utc.localize(datetime.datetime.utcnow())
+        pst_now = utc_now.astimezone(pytz.timezone("America/Los_Angeles"))
+        f.write("Date: " + str(pst_now) + "\n")
 
 
 if __name__ == "__main__":
